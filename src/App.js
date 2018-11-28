@@ -6,6 +6,8 @@ class App extends Component {
     super();
     console.log(this);
     this.state = {
+      addTrackableName: '',
+      addTrackablePerishable: false,
       trackables : [
         {
           name: 'morty',
@@ -49,8 +51,41 @@ class App extends Component {
   newTrackable = (e) => {
     console.log(e);
     // TODO
-    this.setState({ trackables: { ...this.state.trackables, C: 2000000000000000000 } });
+    // this.setState({ trackables: { ...this.state.trackables, C: 2000000000000000000 } });
     this.refs.addTrackable.showModal();
+  }
+
+  addTrackableNameOnChange = (e) => {
+    this.setState({addTrackableName: e.target.value});
+  }
+
+  addTrackablePerishableOnChange = (e) => {
+    this.setState({addTrackablePerishable: e.target.checked});
+  }
+
+  addTrackableSave = () => {
+    if (this.state.trackables.find(tr => tr.name === this.state.addTrackableName)) {
+      alert("cannot add duplicate Trackable");
+      this.addTrackableClear();
+      return;
+    }
+    console.log(this.state.addTrackablePerishable, this.state.addTrackableName);
+    this.setState({
+      trackables: [...this.state.trackables, {
+        name: this.state.addTrackableName,
+        perishable: this.state.addTrackablePerishable,
+        lots: [],
+      }],
+      addTrackableName: '',
+      addTrackablePerishable: false,
+    })
+  }
+
+  addTrackableClear = () => {
+    this.setState({
+      addTrackableName: '',
+      addTrackablePerishable: false,
+    })
   }
 
   render() {
@@ -74,8 +109,8 @@ class App extends Component {
               </tr>
             </thead>
             <tbody>
-              {this.state.trackables.map(trackable => { 
-                return <tr>
+              {this.state.trackables.map(trackable => {
+                return <tr key={trackable.name}>
                   <td>{trackable.name}</td>
                   <td>{trackable.lots.reduce((sum, curr) => {
                     return sum + curr.count
@@ -98,8 +133,10 @@ class App extends Component {
         <dialog id="addTrackable" ref="addTrackable">
           <form method="dialog">
             <p><label>LABEL BABY</label></p>
-            <button>Confirm</button>
-            <button>Cancel</button>
+            <input type="text" placeholder="name" value={this.state.addTrackableName} onChange={this.addTrackableNameOnChange} />
+            <input type="checkbox" checked={this.state.addTrackablePerishable} onChange={this.addTrackablePerishableOnChange} />
+            <button onClick={this.addTrackableSave}>Confirm</button>
+            <button onClick={this.addTrackableClear}>Cancel</button>
           </form>
         </dialog>
       </div>
