@@ -73,7 +73,7 @@ class App extends Component {
   }
 
   decrementInventoryTrackableTypeOnChange = (e) => {
-    this.setState({ decrementInventoryCount: e.target.value });
+    this.setState({ decrementInventoryTrackableType: e.target.value });
   }
 
   addInventoryCountOnChanage = (e) => {
@@ -99,7 +99,7 @@ class App extends Component {
   decrementInventorySave = () => {
     console.log('neals mom');
     let trackable = this.state.trackables.find(tr => {
-      return tr.name === this.state.addInventoryTrackableType;
+      return tr.name === this.state.decrementInventoryTrackableType;
     });
 
     if (this.state.decrementInventoryCount < 1 || !trackable || this.state.decrementInventoryCount > trackable.lots.reduce((sum, curr) => {
@@ -110,27 +110,33 @@ class App extends Component {
       this.decrementInventoryClear();
       return;
     }
-    
-    let sortedLots = trackable.lots.sort((lot1, lot2) => {
+
+    let sortedLots = [...trackable.lots.values()].sort((lot1, lot2) => {
+      console.log(trackable.lots.values(), trackable.lots);
       if (lot1.expiration_date < lot2.expiration_date) {
         return -1;
       }
       return 1;
     });
-
-    while (this.decrementInventoryCount > 0) {
+    console.log(sortedLots);
+    let decrementCount = this.state.decrementInventoryCount;
+    while (decrementCount > 0) {
+      console.log('before', sortedLots);
       let currentLot = sortedLots.shift();
-
-      if (currentLot.count > this.decrementInventoryCount) {
-        currentLot.count -= this.decrementInventoryCount;
-        this.setState({ decrementInventoryCount: 0 });
+      console.log('after', sortedLots);
+      console.log(currentLot);
+      if (currentLot.count > decrementCount) {
+        currentLot.count -= decrementCount;
+        decrementCount = 0;
       } else {
-        this.setState({ decrementInventoryCount: this.state.decrementInventoryCount - currentLot.count });
+        decrementCount -= currentLot.count;
+        // we're destroying this lot, so we don't need to set it's count to 0
         let index = trackable.lots.findIndex(lot => {
           return lot.creation_date === currentLot.creation_date;
         });
         trackable.lots.splice(index, 1);
       }
+      this.setState({ decrementInventoryCount: 0 });
     }
   }
 
@@ -149,7 +155,7 @@ class App extends Component {
       return;
     }
 
-    trackable.lots.push({ 
+    trackable.lots.push({
       count: this.state.addInventoryCount,
       creation_date: (new Date()).toISOString(),
       expiration_date: this.state.addInventoryPerishableDate
@@ -265,7 +271,7 @@ class App extends Component {
             <p><label>Decrement Inventory</label></p>
             <select id="trackableId" value={this.state.decrementInventoryTrackableType} onChange={this.decrementInventoryTrackableTypeOnChange}>
               {this.state.trackables.map(trackable => {
-                return <option value={trackable.name}>{trackable.name}</option>
+                return <option value={trackable.name} key={trackable.name}>{trackable.name}</option>
               })}
             </select>
             <input type="number" placeholder="count" value={this.state.decrementInventoryCount} onChange={this.decrementInventoryCountOnChange} />
