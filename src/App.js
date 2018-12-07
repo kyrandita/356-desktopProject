@@ -13,6 +13,7 @@ class App extends Component {
       addInventoryTrackableType: 'morty',
       decrementInventoryTrackableType: 'morty',
       decrementInventoryCount: 0,
+      selectedTrackable: null,
       trackables : [
         {
           name: 'morty',
@@ -34,7 +35,7 @@ class App extends Component {
             {
               date: '2018-11-30T14:23:16Z',
               'type': 'shrinkage',
-              'details': 'Count discrepency indicates shrinkage of -4 items'
+              'details': 'Count discrepancy indicates shrinkage of -4 items'
             }
           ]
         },
@@ -58,13 +59,20 @@ class App extends Component {
             {
               date: '2018-11-30T14:23:16Z',
               'type': 'shipment',
-              'details': 'A shipment was recieved totalling 47 items in 2 seperate lots'
+              'details': 'A shipment was received totaling 47 items in 2 separate lots'
             }
           ]
         }
       ]
     }
     // this.newTrackable = this.newTrackable.bind(this);
+  }
+
+  componentDidMount = () => {
+    this.refs.splash.showModal();
+    this.refs.splash.addEventListener('click', () => {
+      this.refs.splash.close();
+    })
   }
 
   newTrackable = (e) => {
@@ -210,6 +218,16 @@ class App extends Component {
     })
   }
 
+  trackableDetails = e => {
+    let trackable = (this.state.trackables.find(t => t.name === e.target.parentElement.dataset.name));
+
+    this.setState({
+      selectedTrackable: trackable
+    });
+
+    this.refs.showTrackableDetails.showModal();
+  }
+
   render() {
     return (
       <div className="App">
@@ -232,7 +250,7 @@ class App extends Component {
             </thead>
             <tbody>
               {this.state.trackables.map(trackable => {
-                return <tr key={trackable.name}>
+                return <tr key={trackable.name} data-name={trackable.name} onClick={this.trackableDetails}>
                   <td>{trackable.name}</td>
                   <td>{trackable.lots.reduce((sum, curr) => {
                     return sum + curr.count
@@ -250,6 +268,12 @@ class App extends Component {
             </tbody>
           </table>
         </div>
+
+        {/* Splash Page */}
+        <dialog id="splash" ref="splash">
+          <h1>The Best Inventory Management System EVAR (BIMSE)</h1>
+          <h2>Minimalist Inventory Management</h2>
+        </dialog>
 
         {/* Add new trackable form dialog */}
         <dialog id="addTrackable" ref="addTrackable">
@@ -291,6 +315,51 @@ class App extends Component {
             <button onClick={this.decrementInventorySave}>Confirm</button>
             <button onClick={this.decrementInventoryClear}>Cancel</button>
           </form>
+        </dialog>
+
+        {/* Show trackable details */}
+        <dialog id="showTrackableDetails" ref="showTrackableDetails">
+          {(this.state.selectedTrackable) ? <div><p><label>Trackable Details</label></p>
+          <div>
+            <p>{this.state.selectedTrackable.name}</p>
+            <p>{this.state.selectedTrackable.perishable}</p>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Count</th>
+                <th>Creation Date</th>
+                <th>Expiration Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.selectedTrackable.lots.map(lot => {
+                return <tr>
+                  <td>{lot.count}</td>
+                  <td>{lot.creation_date}</td>
+                  <td>{lot.expiration_date}</td>
+                </tr> 
+              })}
+            </tbody>
+          </table>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.selectedTrackable.log.map(entry => {
+                return <tr>
+                  <td>{entry.date}</td>
+                  <td>{entry.type}</td>
+                  <td>{entry.details}</td>
+                </tr> 
+              })}
+            </tbody>
+          </table></div> : '' }
         </dialog>
       </div>
     );
