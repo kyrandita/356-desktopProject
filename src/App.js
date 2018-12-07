@@ -29,6 +29,13 @@ class App extends Component {
               creation_date: '2018-10-30T14:23:16Z',
               expiration_date: '2018-11-30'
             }
+          ],
+          log: [
+            {
+              date: '2018-11-30T14:23:16Z',
+              'type': 'shrinkage',
+              'details': 'Count discrepency indicates shrinkage of -4 items'
+            }
           ]
         },
         {
@@ -45,6 +52,13 @@ class App extends Component {
               count: 30,
               creation_date: '2018-08-04T08:13:09Z',
               expiration_date: '2018-09-04T09:00:00Z'
+            }
+          ],
+          log: [
+            {
+              date: '2018-11-30T14:23:16Z',
+              'type': 'shipment',
+              'details': 'A shipment was recieved totalling 47 items in 2 seperate lots'
             }
           ]
         }
@@ -231,8 +245,7 @@ class App extends Component {
                     }
                     return earliestExp;
                   }, null
-                  )).toDateString()}</td>
-                </tr>
+                )).toDateString()}</td></tr>
               })}
             </tbody>
           </table>
