@@ -205,6 +205,7 @@ class App extends Component {
         name: this.state.addTrackableName,
         perishable: this.state.addTrackablePerishable,
         lots: [],
+        log: [],
       }],
       addTrackableName: '',
       addTrackablePerishable: false,
@@ -233,17 +234,17 @@ class App extends Component {
       <div className="App">
         {/* left side nave bar */}
         <nav>
-          <button onClick={this.newTrackable}>Add Trackable</button>
+          <h1>BIMSĒ</h1>
+          <button onClick={this.newTrackable}>Track New Item</button>
           <button onClick={this.receiveShipment}>Receive Inventory</button>
           <button onClick={this.removeInventory}>Checkout Inventory</button>
-
         </nav>
         {/* routed main OR inventory screen if we're gonna do modals for everything */}
         <div>
           <table>
             <thead>
               <tr>
-                <th>Trackable</th>
+                <th>Item</th>
                 <th>Total Inventory</th>
                 <th>Earliest Lot Expiration</th>
               </tr>
@@ -305,26 +306,29 @@ class App extends Component {
         {/* Decrement inventory form dialog */}
         <dialog id="decrementInventory" ref="decrementInventory">
           <form method="dialog">
-            <p><label>Decrement Inventory</label></p>
+            <h2><label>Decrement Inventory</label></h2>
             <select id="trackableId" value={this.state.decrementInventoryTrackableType} onChange={this.decrementInventoryTrackableTypeOnChange}>
               {this.state.trackables.map(trackable => {
                 return <option value={trackable.name} key={trackable.name}>{trackable.name}</option>
               })}
             </select>
-            <input type="number" placeholder="count" value={this.state.decrementInventoryCount} onChange={this.decrementInventoryCountOnChange} />
-            <button onClick={this.decrementInventorySave}>Confirm</button>
-            <button onClick={this.decrementInventoryClear}>Cancel</button>
+            <label>Quantity<input type="number" placeholder="count" value={this.state.decrementInventoryCount} onChange={this.decrementInventoryCountOnChange} /></label>
+            <menu>
+              <button onClick={this.decrementInventorySave}>Confirm</button>
+              <button onClick={this.decrementInventoryClear}>Cancel</button>
+            </menu>
           </form>
         </dialog>
 
         {/* Show trackable details */}
         <dialog id="showTrackableDetails" ref="showTrackableDetails">
-          {(this.state.selectedTrackable) ? <div><p><label>Trackable Details</label></p>
-          <div>
+          {(this.state.selectedTrackable) ? <div>
+          <h2><label>Trackable Details</label></h2>
+          <div class="details">
             <p>{this.state.selectedTrackable.name}</p>
-            <p>{this.state.selectedTrackable.perishable}</p>
+            <p>{this.state.selectedTrackable.perishable ? "perishable" : "aaa"}</p>
           </div>
-          <table>
+          <table class="lots">
             <thead>
               <tr>
                 <th>Count</th>
@@ -337,12 +341,11 @@ class App extends Component {
                 return <tr>
                   <td>{lot.count}</td>
                   <td>{lot.creation_date}</td>
-                  <td>{lot.expiration_date}</td>
-                </tr> 
+                  <td>{lot.expiration_date}</td></tr>
               })}
             </tbody>
           </table>
-          <table>
+          <table class="log">
             <thead>
               <tr>
                 <th>Date</th>
@@ -356,7 +359,7 @@ class App extends Component {
                   <td>{entry.date}</td>
                   <td>{entry.type}</td>
                   <td>{entry.details}</td>
-                </tr> 
+                </tr>
               })}
             </tbody>
           </table></div> : '' }

@@ -1,34 +1,33 @@
+:root {
+  --primary: gray;
+  --secondary: yellow;
+}
+
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-}
-
-.App-header {
-  background-color: #282c34;
+  display: grid;
+  grid-template-columns: 10em auto;
   min-height: 100vh;
+}
+
+.App > nav {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  background-color: var(--primary);
 }
 
-.App-link {
-  color: #61dafb;
+.App > nav > h1 {
+  align-self: center;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.App > nav > button {
+  margin: 5px 2px;
+  background-color: var(--secondary);
+  border: none;
+}
+
+.App > div {
+  display: flex;
+  flex-direction: column;
 }
 
 table, th, td {
@@ -37,4 +36,37 @@ table, th, td {
 
 table {
   float: left;
+}
+
+#decrementInventory > form {
+  display: flex;
+  flex-direction: column;
+}
+
+#showTrackableDetails {
+  width: auto;
+  padding: 0;
+  margin: 0;
+  left: 10em;
+  right: 0;
+}
+
+#showTrackableDetails > div {
+  display: grid;
+  grid-template-columns: 50%;
+  grid-column-gap: 5px;
+}
+
+#showTrackableDetails > div > .details {
+  grid-column: 1 / span 2;
+}
+
+#showTrackableDetails > div > .lots {
+  grid-column: 1;
+  margin-left: 5px;
+}
+
+#showTrackableDetails > div > .log {
+  grid-column: 2;
+  margin-right: 5px;
 }
