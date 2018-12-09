@@ -72,7 +72,8 @@ class App extends Component {
     this.refs.splash.showModal();
     this.refs.splash.addEventListener('click', () => {
       this.refs.splash.close();
-    })
+    });
+
   }
 
   newTrackable = (e) => {
@@ -281,11 +282,12 @@ class App extends Component {
         {/* Add new trackable form dialog */}
         <dialog id="addTrackable" ref="addTrackable">
           <form method="dialog">
-            <p><label>Add New Trackable</label></p>
+            <h2>Track New Item</h2>
+            <label>Item:</label>
             <input type="text" placeholder="name" value={this.state.addTrackableName} onChange={this.addTrackableNameOnChange} />
-            <input type="checkbox" checked={this.state.addTrackablePerishable} onChange={this.addTrackablePerishableOnChange} />
-            <button onClick={this.addTrackableSave}>Confirm</button>
-            <button onClick={this.addTrackableClear}>Cancel</button>
+            <label>Perishable: <input type="checkbox" checked={this.state.addTrackablePerishable} onChange={this.addTrackablePerishableOnChange} /></label>
+            <button class="primary good" onClick={this.addTrackableSave}>Confirm</button>
+            <button class="primary bad" onClick={this.addTrackableClear}>Cancel</button>
           </form>
         </dialog>
 
@@ -324,8 +326,9 @@ class App extends Component {
 
         {/* Show trackable details */}
         <dialog id="showTrackableDetails" ref="showTrackableDetails">
-          {(this.state.selectedTrackable) ? <div>
           <h2><label>Trackable Details</label></h2>
+          <button onClick={() => document.getElementById('showTrackableDetails').close()}>X</button>
+          {(this.state.selectedTrackable) ? <div>
           <div class="details">
             <p>{this.state.selectedTrackable.name}</p>
             <p>{this.state.selectedTrackable.perishable ? "perishable" : "aaa"}</p>

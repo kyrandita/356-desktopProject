@@ -1,6 +1,11 @@
 :root {
-  --primary: gray;
-  --secondary: yellow;
+  --primary: #b3d608;
+  --secondary: #de2e09;
+  --tertiary: #29199a;
+}
+
+* {
+  font-family: 'Titillium Web', sans-serif;
 }
 
 .App {
@@ -12,7 +17,7 @@
 .App > nav {
   display: flex;
   flex-direction: column;
-  background-color: var(--primary);
+  background-color: slategray;
 }
 
 .App > nav > h1 {
@@ -21,13 +26,42 @@
 
 .App > nav > button {
   margin: 5px 2px;
-  background-color: var(--secondary);
+  background-color: var(--primary);
   border: none;
 }
 
 .App > div {
   display: flex;
   flex-direction: column;
+}
+
+button {
+  border-width: 2px;
+  border-style: solid;
+  border-radius: .5em;
+  background-color: transparent;
+  border-color: transparent;
+  font-weight: 700;
+}
+
+button.good {
+  --button-main: var(--primary);
+  --button-sub: var(--tertiary);
+}
+
+button.bad {
+  --button-main: var(--secondary);
+  --button-sub: var(--primary);
+}
+
+button.primary {
+  background-color: var(--button-main);
+  color: var(--button-sub);
+}
+
+button.secondary {
+  color: var(--button-main);
+  border-color: var(--button-sub);
 }
 
 table, th, td {
@@ -38,9 +72,14 @@ table {
   float: left;
 }
 
-#decrementInventory > form {
+#decrementInventory > form, #addInventory > form, #addTrackable > form {
   display: flex;
   flex-direction: column;
+}
+
+#decrementInventory > form > *, #addInventory > form > *, #addTrackable > form > * {
+  margin-bottom: 10px;
+  margin-top: 0px;
 }
 
 #showTrackableDetails {
@@ -69,4 +108,12 @@ table {
 #showTrackableDetails > div > .log {
   grid-column: 2;
   margin-right: 5px;
+}
+
+#showTrackableDetails > button {
+  float: right;
+}
+
+#showTrackableDetails > h2 {
+  display: inline-block;
 }
