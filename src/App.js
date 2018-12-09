@@ -220,7 +220,7 @@ class App extends Component {
   }
 
   trackableDetails = e => {
-    let trackable = (this.state.trackables.find(t => t.name === e.target.parentElement.dataset.name));
+    let trackable = (this.state.trackables.find(t => t.name === e.target.parentElement.parentElement.dataset.name));
 
     this.setState({
       selectedTrackable: trackable
@@ -247,11 +247,12 @@ class App extends Component {
                 <th>Item</th>
                 <th>Total Inventory</th>
                 <th>Earliest Lot Expiration</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {this.state.trackables.map(trackable => {
-                return <tr key={trackable.name} data-name={trackable.name} onClick={this.trackableDetails}>
+                return <tr key={trackable.name} data-name={trackable.name}>
                   <td>{trackable.name}</td>
                   <td>{trackable.lots.reduce((sum, curr) => {
                     return sum + curr.count
@@ -264,7 +265,8 @@ class App extends Component {
                     }
                     return earliestExp;
                   }, null
-                )).toDateString()}</td></tr>
+                )).toDateString()}</td>
+                <td><button onClick={this.trackableDetails}>Details</button></td></tr>
               })}
             </tbody>
           </table>
