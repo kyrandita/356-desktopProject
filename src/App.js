@@ -4,7 +4,6 @@ import './App.css';
 class App extends Component {
   constructor() {
     super();
-    console.log(this);
     this.state = {
       addTrackableName: '',
       addTrackablePerishable: false,
@@ -22,11 +21,13 @@ class App extends Component {
           yourmom: true,
           lots: [
             {
+              uuid: 'a',
               count: 40,
               creation_date: '2018-10-30T16:23:16Z',
               expiration_date: '2018-11-29'
             },
             {
+              uuid: 'b',
               count: 70,
               creation_date: '2018-10-30T14:23:16Z',
               expiration_date: '2018-11-30'
@@ -34,6 +35,7 @@ class App extends Component {
           ],
           log: [
             {
+              uuid: 'c',
               date: '2018-11-30T14:23:16Z',
               'type': 'Shrinkage',
               'details': 'Count discrepancy indicates shrinkage of -4 items'
@@ -46,11 +48,13 @@ class App extends Component {
           yourmom: true,
           lots: [
             {
+              uuid: 'a',
               count: 100,
               creation_date: '2018-09-15T10:24:19Z',
               expiration_date: '2018-12-25T04:00:00Z'
             },
             {
+              uuid: 'b',
               count: 30,
               creation_date: '2018-08-04T08:13:09Z',
               expiration_date: '2018-09-04T09:00:00Z'
@@ -58,6 +62,7 @@ class App extends Component {
           ],
           log: [
             {
+              uuid: 'c',
               date: '2018-11-30T14:23:16Z',
               'type': 'Shipment',
               'details': 'A shipment was received totaling 47 items in 2 separate lots'
@@ -78,9 +83,6 @@ class App extends Component {
   }
 
   newTrackable = (e) => {
-    console.log(e);
-    // TODO
-    // this.setState({ trackables: { ...this.state.trackables, C: 2000000000000000000 } });
     this.refs.addTrackable.showModal();
   }
 
@@ -93,7 +95,7 @@ class App extends Component {
   }
 
   decrementInventoryCountOnChange = (e) => {
-    this.setState({ decrementInventoryCount: parseInt(e.target.value) })
+    this.setState({ decrementInventoryCount: parseInt(e.target.value) || '' })
   }
 
   decrementInventoryTrackableTypeOnChange = (e) => {
@@ -101,7 +103,7 @@ class App extends Component {
   }
 
   addInventoryCountOnChanage = (e) => {
-    this.setState({ addInventoryCount: parseInt(e.target.value) });
+    this.setState({ addInventoryCount: parseInt(e.target.value) || '' });
   }
 
   addInventoryTrackableTypeOnChange = (e) => {
@@ -125,7 +127,6 @@ class App extends Component {
   }
 
   decrementInventorySave = () => {
-    console.log('neals mom');
     let trackable = this.state.trackables.find(tr => {
       return tr.name === this.state.decrementInventoryTrackableType;
     });
@@ -140,25 +141,20 @@ class App extends Component {
     }
 
     let sortedLots = [...trackable.lots.values()].sort((lot1, lot2) => {
-      console.log(trackable.lots.values(), trackable.lots);
       if (lot1.expiration_date < lot2.expiration_date) {
         return -1;
       }
       return 1;
     });
-    console.log(sortedLots);
     let decrementCount = this.state.decrementInventoryCount;
     while (decrementCount > 0) {
-      console.log('before', sortedLots);
       let currentLot = sortedLots.shift();
-      console.log('after', sortedLots);
-      console.log(currentLot);
       if (currentLot.count > decrementCount) {
-        trackable.log.push({ date: (new Date()).toISOString(), type: this.state.decrementInventoryReason, details: `Pulled ${decrementCount} from lot of ${trackable.name}`});
+        trackable.log.push({ uuid: Math.floor(Math.random() * 100000000), date: (new Date()).toISOString(), type: this.state.decrementInventoryReason, details: `Pulled ${decrementCount} from lot of ${trackable.name}`});
         currentLot.count -= decrementCount;
         decrementCount = 0;
       } else {
-        trackable.log.push({ date: (new Date()).toISOString(), type: this.state.decrementInventoryReason, details: `Pulled ${currentLot.count} from lot of ${trackable.name} - finishing lot.`});
+        trackable.log.push({ uuid: Math.floor(Math.random() * 100000000), date: (new Date()).toISOString(), type: this.state.decrementInventoryReason, details: `Pulled ${currentLot.count} from lot of ${trackable.name} - finishing lot.`});
         decrementCount -= currentLot.count;
         // we're destroying this lot, so we don't need to set it's count to 0
         let index = trackable.lots.findIndex(lot => {
@@ -179,8 +175,14 @@ class App extends Component {
       return tr.name === this.state.addInventoryTrackableType;
     });
 
-    if (this.state.addInventoryCount < 1 || !trackable) {
+    if (this.state.addInventoryCount < 1) {
       alert("Not a valid amount");
+      this.addInventoryClear();
+      return;
+    }
+
+    if (!trackable) {
+      alert("That item doesn't exist");
       this.addInventoryClear();
       return;
     }
@@ -188,17 +190,17 @@ class App extends Component {
     let track = {
       count: this.state.addInventoryCount,
       creation_date: (new Date()).toISOString(),
+      uuid: Math.floor(Math.random() * 100000000)
     };
 
     if (trackable.perishable) {
-      console.log('perishabledate babyzalkj;sdf: ', this.state.addInventoryPerishableDate);
       let dateParts = this.state.addInventoryPerishableDate.split('-');
       dateParts[1] = dateParts[1] - 1;
       track.expiration_date = new Date(...dateParts).toISOString();
     }
     
     trackable.lots.push(track);
-    trackable.log.push({ date: (new Date()).toISOString(), type: 'Inventory received', details: `Received ${this.state.addInventoryCount} of ${trackable.name}`});
+    trackable.log.push({ uuid: Math.floor(Math.random() * 100000000), date: (new Date()).toISOString(), type: 'Inventory received', details: `Received ${this.state.addInventoryCount} of ${trackable.name}`});
 
      this.addInventoryClear();
   }
@@ -216,13 +218,19 @@ class App extends Component {
       this.addTrackableClear();
       return;
     }
-    console.log(this.state.addTrackablePerishable, this.state.addTrackableName);
+
+    if (!this.state.addTrackableName) {
+      alert("Item name cannot be blank.");
+      this.addTrackableClear();
+      return;
+    }
+
     this.setState({
       trackables: [...this.state.trackables, {
         name: this.state.addTrackableName,
         perishable: this.state.addTrackablePerishable,
         lots: [],
-        log: [{ date: (new Date()).toISOString(), type: 'Creation', details: `Started tracking ${this.state.addTrackableName} on ${(new Date()).toISOString()}`}]
+        log: [{ uuid: Math.floor(Math.random() * 100000000), date: (new Date()).toISOString(), type: 'Creation', details: `Started tracking ${this.state.addTrackableName} on ${(new Date()).toISOString()}`}]
       }],
       addTrackableName: '',
       addTrackablePerishable: false,
@@ -252,9 +260,9 @@ class App extends Component {
         {/* left side nave bar */}
         <nav>
           <h1>BIMSĒ</h1>
-          <button class="primary good" onClick={this.newTrackable}>New Item</button>
-          <button class="primary good" onClick={this.receiveShipment}>Add Inventory</button>
-          <button class="primary good" onClick={this.removeInventory}>Remove Inventory</button>
+          <button className="primary good" onClick={this.newTrackable}>New Item</button>
+          <button className="primary good" onClick={this.receiveShipment}>Add Inventory</button>
+          <button className="primary good" onClick={this.removeInventory}>Remove Inventory</button>
         </nav>
         {/* routed main OR inventory screen if we're gonna do modals for everything */}
         <div>
@@ -275,15 +283,15 @@ class App extends Component {
                     return sum + curr.count
                   }, 0
                   )}</td>
-                  <td>{trackable.perishable ? new Date(trackable.lots.reduce((earliestExp, curr) => {
+                  <td>{trackable.perishable ? ( trackable.lots.length > 0 ? new Date(trackable.lots.reduce((earliestExp, curr) => {
                     let newestExp = (new Date (curr.expiration_date)).valueOf();
                     if (earliestExp > newestExp || !earliestExp) {
                       return newestExp;
                     }
                     return earliestExp;
                   }, null
-                )).toDateString() : 'N/A'}</td>
-                <td><button class="secondary good" onClick={this.trackableDetails}>Details</button></td></tr>
+                )).toDateString() : 'No lots' ) : 'N/A'}</td>
+                <td><button className="secondary good" onClick={this.trackableDetails}>Details</button></td></tr>
               })}
             </tbody>
           </table>
@@ -303,8 +311,8 @@ class App extends Component {
             <input type="text" placeholder="name" value={this.state.addTrackableName} onChange={this.addTrackableNameOnChange} />
             <label>Perishable: <input type="checkbox" checked={this.state.addTrackablePerishable} onChange={this.addTrackablePerishableOnChange} /></label>
             <menu>
-              <button class="primary good" onClick={this.addTrackableSave}>Confirm</button>
-              <button class="primary bad" onClick={this.addTrackableClear}>Cancel</button>
+              <button className="primary good" onClick={this.addTrackableSave}>Confirm</button>
+              <button className="primary bad" onClick={this.addTrackableClear}>Cancel</button>
             </menu>
           </form>
         </dialog>
@@ -316,15 +324,15 @@ class App extends Component {
             <label>Item:</label>
             <select id="trackableId" value={this.state.addInventoryTrackableType} onChange={this.addInventoryTrackableTypeOnChange}>
               {this.state.trackables.map(trackable => {
-                return <option value={trackable.name}>{trackable.name}</option>
+                return <option key={trackable.name} value={trackable.name}>{trackable.name}</option>
               })}
             </select>
             <label>Amount:</label>
             <input type="number" placeholder="count" value={this.state.addInventoryCount} onChange={this.addInventoryCountOnChanage} />
-            { this.state.trackables.find(a => a.name === this.state.addInventoryTrackableType).perishable ? [<label>Expiration Date:</label>, <input type="date" value={this.state.addInventoryPerishableDate} onChange={this.addInventoryPerishableDateOnChange} />] : '' }
+            { this.state.trackables.find(a => a.name === this.state.addInventoryTrackableType).perishable ? <React.Fragment><label>Expiration Date:</label> <input type="date" value={this.state.addInventoryPerishableDate} onChange={this.addInventoryPerishableDateOnChange} /></React.Fragment> : '' }
             <menu>
-              <button class="primary good" onClick={this.addInventorySave}>Confirm</button>
-              <button class="primary bad" onClick={this.addInventoryClear}>Cancel</button>
+              <button className="primary good" onClick={this.addInventorySave}>Confirm</button>
+              <button className="primary bad" onClick={this.addInventoryClear}>Cancel</button>
             </menu>
           </form>
         </dialog>
@@ -336,7 +344,7 @@ class App extends Component {
             <label>Item:</label>
             <select id="trackableId" value={this.state.decrementInventoryTrackableType} onChange={this.decrementInventoryTrackableTypeOnChange}>
               {this.state.trackables.map(trackable => {
-                return <option value={trackable.name} key={trackable.name}>{trackable.name}</option>
+                return <option key={trackable.name} value={trackable.name} key={trackable.name}>{trackable.name}</option>
               })}
             </select>
             <label>Quantity:</label>
@@ -347,8 +355,8 @@ class App extends Component {
               <option value='Shrinkage'>Shrinkage</option>
             </select>
             <menu>
-              <button class="primary good" onClick={this.decrementInventorySave}>Confirm</button>
-              <button class="primary bad" onClick={this.decrementInventoryClear}>Cancel</button>
+              <button className="primary good" onClick={this.decrementInventorySave}>Confirm</button>
+              <button className="primary bad" onClick={this.decrementInventoryClear}>Cancel</button>
             </menu>
           </form>
         </dialog>
@@ -358,12 +366,15 @@ class App extends Component {
           <h2>Trackable Details</h2>
           <button onClick={() => document.getElementById('showTrackableDetails').close()}>X</button>
           {(this.state.selectedTrackable) ? <div>
-          <div class="details">
+          <div className="details">
             <p><label>Item:</label> {this.state.selectedTrackable.name}</p>
             { this.state.selectedTrackable.perishable ? <p>Perishable</p> : '' }
           </div>
-          <table class="lots">
+          <table className="lots">
             <thead>
+              <tr>
+                <th colSpan="3">Lots</th>
+              </tr>
               <tr>
                 <th>Count</th>
                 <th>Creation Date</th>
@@ -372,15 +383,18 @@ class App extends Component {
             </thead>
             <tbody>
               {this.state.selectedTrackable.lots.map(lot => {
-                return <tr>
+                return <tr key={lot.uuid}>
                   <td>{lot.count}</td>
                   <td>{lot.creation_date}</td>
                   <td>{lot.expiration_date || 'N/A'}</td></tr>
               })}
             </tbody>
           </table>
-          <table class="log">
+          <table className="log">
             <thead>
+            <tr>
+                <th colSpan="3">Log</th>
+              </tr>
               <tr>
                 <th>Date</th>
                 <th>Type</th>
@@ -389,7 +403,7 @@ class App extends Component {
             </thead>
             <tbody>
               {this.state.selectedTrackable.log.map(entry => {
-                return <tr>
+                return <tr key={entry.uuid}>
                   <td>{entry.date}</td>
                   <td>{entry.type}</td>
                   <td>{entry.details}</td>
