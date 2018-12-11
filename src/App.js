@@ -187,6 +187,10 @@ class App extends Component {
       return;
     }
 
+    if (this.addInventoryPerishableDate ) {
+
+    }
+
     let track = {
       count: this.state.addInventoryCount,
       creation_date: (new Date()).toISOString(),
@@ -195,6 +199,11 @@ class App extends Component {
 
     if (trackable.perishable) {
       let dateParts = this.state.addInventoryPerishableDate.split('-');
+      if (dateParts.length < 3) {
+        alert("Invalid date");
+        this.addInventoryClear();
+        return;
+      }
       dateParts[1] = dateParts[1] - 1;
       track.expiration_date = new Date(...dateParts).toISOString();
     }
